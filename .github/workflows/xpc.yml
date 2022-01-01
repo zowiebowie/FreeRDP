@@ -1,4 +1,4 @@
-name: freerdp6hours
+name: MarcelCyan
 
 on: workflow_dispatch
 
@@ -9,30 +9,35 @@ jobs:
     timeout-minutes: 9999
 
     steps:
-    - name: Mendownload Ngrok.
+    - name: Download Ngrok.
       run: |
         Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
-        Invoke-WebRequest https://raw.githubusercontent.com/Ibord1967/freerdp6hours/main/start.bat -OutFile start.bat
-        Invoke-WebRequest https://raw.githubusercontent.com/Ibord1967/freerdp6hours/main/wallpaper.png -OutFile wallpaper.bmp
-        Invoke-WebRequest https://raw.githubusercontent.com/Ibord1967/freerdp6hours/main/wallpaper.bat -OutFile wallpaper.bat
-    - name: Mengextract Ngrok File.
+        Invoke-WebRequest https://raw.githubusercontent.com/MarcelCyan/FreeRDP/master/start.bat -OutFile start.bat
+        Invoke-WebRequest https://raw.githubusercontent.com/MarcelCyan/FreeRDP/master/wallpaper.png -OutFile wallpaper.png
+        Invoke-WebRequest https://raw.githubusercontent.com/MarcelCyan/FreeRDP/master/wallpaper.bat -OutFile wallpaper.bat
+        Invoke-WebRequest https://raw.githubusercontent.com/MarcelCyan/FreeRDP/master/loop.bat -OutFile loop.bat
+    - name: Download Launcher.
+      run: |
+        Invoke-WebRequest https://raw.githubusercontent.com/MarcelCyan/FreeRDP/master/launcher/Node.js.lnk -OutFile Node.js.lnk
+        Invoke-WebRequest https://raw.githubusercontent.com/MarcelCyan/FreeRDP/master/launcher/Visual%20Studio%202019.lnk -OutFile "Visual Studio 2019.lnk"
+    - name: Extracting Ngrok File.
       run: Expand-Archive ngrok.zip
-    - name: Connect Ke Akun Ngrok.
+    - name: Connect To Account Ngrok.
       run: .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
       env:
         NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-    - name: Mengaktifkan Akses RDP.
+    - name: Turn on Access RDP.
       run: | 
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server'-name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -name "UserAuthentication" -Value 1
-        copy wallpaper.bmp D:\a\wallpaper.bmp
+        copy wallpaper.png D:\a\wallpaper.png
         copy wallpaper.bat D:\a\wallpaper.bat
-    - name: Membuat Tunnel.
-      run: Start-Process Powershell -ArgumentList '-Noexit -Command ".\ngrok\ngrok.exe tcp 3389"'
-    - name: Connect Ke RDP Kamu CPU 2 Core - 7GB Ram - 255 SSD.
+        copy Node.js.lnk C:\Users\Public\Desktop\Node.js.lnk
+        copy "Visual Studio 2019.lnk" "C:\Users\Public\Desktop\Visual Studio 2019.lnk"
+    - name: Make Tunnel.
+      run: Start-Process Powershell -ArgumentList '-Noexit -Command ".\ngrok\ngrok.exe tcp --region ap 3389"'
+    - name: Connect To Your RDP CPU 2 Core - 7GB Ram - 256 SSD.
       run: cmd /c start.bat
-    - name: RDP Berhasil Dibuat! Anda Bisa Menutup Tab Sekarang. Jangan lupa subrek XP CHANNEL
-      run: | 
-        Invoke-WebRequest https://github.com/Ibord1967/freerdp6hours/raw/main/loop.ps1 -OutFile loop.ps1
-        ./loop.ps1
+    - name: Successfully Created! You Can Close Tabs Now.
+      run: cmd /c loop.bat
